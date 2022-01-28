@@ -41,9 +41,9 @@ pass_pipe = False
 
 
 #loading images
-bg = pygame.image.load('/Users/wassef/PycharmProjects/FlappyBird/venv/img/bg.png')
-ground_img = pygame.image.load("/Users/wassef/PycharmProjects/FlappyBird/venv/img/ground.png")
-btn_img = pygame.image.load("/Users/wassef/PycharmProjects/FlappyBird/venv/img/restart.png")
+bg = pygame.image.load("img/bg.png")
+ground_img = pygame.image.load("img/ground.png")
+btn_img = pygame.image.load("img/restart.png")
 
 
 
@@ -81,7 +81,7 @@ class Bird(pygame.sprite.Sprite):                   #pygame module with basic ga
         self.index = 0
         self.counter = 0
         for num in range(1, 4):
-            img = pygame.image.load(f'/Users/wassef/PycharmProjects/FlappyBird/venv/img/bird{num}.png')
+            img = pygame.image.load(f"img/bird{num}.png")
             self.images.append(img)
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()           #create a rectangle for the image
@@ -137,7 +137,7 @@ class Bird(pygame.sprite.Sprite):                   #pygame module with basic ga
 class Pipe(pygame.sprite.Sprite):
     def __init__(self, x, y,position):
         pygame.sprite.Sprite.__init__(self)
-        self.image=pygame.image.load('venv/img/pipe.png')
+        self.image=pygame.image.load('./img/pipe.png')
         self.rect=self.image.get_rect()
         #position 1 to -1 btm
         if position == 1:
