@@ -6,24 +6,19 @@ import random
 
 pygame.init()
 
+                                    #---------------------screen,Gvars,images init---------------------
+
+
 clock = pygame.time.Clock()
 fps = 60
-
-
-
-
 
 screen_width = 600
 screen_height = 900
 screen = pygame.display.set_mode((screen_width,screen_height)) # creating the game window
 pygame.display.set_caption("Flappy Bird ")
 
-
-
-
 #define font
 font = pygame.font.SysFont('Bauhaus 93' , 60)
-
 white = (255,255,255)
 
 
@@ -38,18 +33,10 @@ last_pipe =pygame.time.get_ticks() - pipe_frequency
 score = 0
 pass_pipe = False
 
-
-
 #loading images
 bg = pygame.image.load("img/bg.png")
 ground_img = pygame.image.load("img/ground.png")
 btn_img = pygame.image.load("img/restart.png")
-
-
-
-
-
-
 
 #draw text
 def draw_text(text,font,text_col,x,y):
@@ -66,13 +53,13 @@ def reset_game():
 
 
 
+                                        #-----------------------------Classes------------------------------
 
 
 
 
 
-
-
+#-----------------------------Bird------------------------------
 
 class Bird(pygame.sprite.Sprite):                   #pygame module with basic game object classes,Simple base class for visible game objects.
     def __init__(self,x,y):
@@ -84,13 +71,12 @@ class Bird(pygame.sprite.Sprite):                   #pygame module with basic ga
             img = pygame.image.load(f"img/bird{num}.png")
             self.images.append(img)
         self.image = self.images[self.index]
-        self.rect = self.image.get_rect()           #create a rectangle for the image
+        #create a rectangle for the image
+        self.rect = self.image.get_rect()           
         self.rect.center = [x,y]
-        self.vel = 0                                #vel is for appling gravity to the bird and be always down
+        #vel is for appling gravity to the bird and be always down
+        self.vel = 0                                
         self.clicked = False
-
-
-
 
 
     def update(self):
@@ -111,6 +97,7 @@ class Bird(pygame.sprite.Sprite):                   #pygame module with basic ga
             if pygame.mouse.get_pressed()[0] == True:
                 self.clicked = False
 
+           
             # handle the images
             self.counter += 1
             flap_cooldown = 5
@@ -121,7 +108,9 @@ class Bird(pygame.sprite.Sprite):                   #pygame module with basic ga
                     self.index = 0
             self.image = self.images[self.index]
 
-             #rotate the bird
+            
+            
+            #rotate the bird
             self.image = pygame.transform.rotate( self.images[self.index],self.vel*-2)
         else:
             self.image = pygame.transform.rotate(self.images[self.index], -90)
@@ -131,7 +120,7 @@ class Bird(pygame.sprite.Sprite):                   #pygame module with basic ga
 
 
 
-
+#-----------------------------Pipe------------------------------
 
 
 class Pipe(pygame.sprite.Sprite):
@@ -154,7 +143,7 @@ class Pipe(pygame.sprite.Sprite):
 
 
 
-
+#----------------------------Button------------------------------
 class Button():
     def __init__(self,x,y,image):
         self.image = image
@@ -181,21 +170,19 @@ class Button():
 
 
 
+                                #-----------------------------creating img groups and objects------------------------------
 
 
 
-
-
-bird_group = pygame.sprite.Group()              #A container class to hold and manage multiple Sprite objects.
-
+#A container class to hold and manage multiple Sprite objects.
+bird_group = pygame.sprite.Group()              
 pipe_group = pygame.sprite.Group()
 
 
 
-
-
 flappy = Bird(100, int(screen_height/2))
-bird_group.add(flappy)                          #add instance into the group
+#add instance into the group
+bird_group.add(flappy)                          
 
 #create restart butt
 button = Button(screen_width // 2 - 50  , screen_height//2 -100 , btn_img)
@@ -204,30 +191,31 @@ button = Button(screen_width // 2 - 50  , screen_height//2 -100 , btn_img)
 
 
 
-
-
-
-
-
-
-
-
-
+                                #-----------------------------Entring the game loop------------------------------
+#game loop : finishes when some events are triggred
 run = True
-while run :                                 #game loop : finishes when something happens
+while run :                                 
 
 
     clock.tick(fps)
-
-                                            #droaw the background
+     
+    #draw the background
     screen.blit(bg , (0,0))
 
-    bird_group.draw(screen)                 #draw the birdGroup images into the screen
+    
+    #draw the birdGroup images into the screen    
+    bird_group.draw(screen)                 
     bird_group.update()
-    pipe_group.draw(screen)  # draw the birdGroup images into the screen
-
-#draw the ground
+    
+    
+    # draw the birdGroup images into the screen   
+    pipe_group.draw(screen)  
+    
+    
+    #draw the ground
     screen.blit( ground_img,(ground_scroll,700))
+    
+    
     #check score
     if len(pipe_group) > 0 :
         if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left\
@@ -239,17 +227,22 @@ while run :                                 #game loop : finishes when something
                 score += 1
                 pass_pipe = False
 
-
+    #draw the score
     draw_text(str(score),font,white,int(screen_width)/2,20)
 
-    #collide groups
+   
+
+    #check if groups collided
     if pygame.sprite.groupcollide(bird_group,pipe_group,False,False) or flappy.rect.top < 0 :
         gameOver = True
+    
     #check ground
     if flappy.rect.bottom >=  700:
         gameOver = True
         flying = False
 
+    
+    #Generating obstacls
     if gameOver == False and flying == True  :
 
         #generate new pipes
@@ -263,23 +256,32 @@ while run :                                 #game loop : finishes when something
             pipe_group.add(top_pipe)
             last_pipe = time_now
 
+        
         #draw and scroll the ground
         ground_scroll -= scroll_speed
         if abs(ground_scroll) > 35 :
             ground_scroll = 0
         pipe_group.update()
 
+    
+    
     #check for gameover and reset
     if gameOver == True:
         if button.draw() == True:
             gameOver = False
             score = reset_game()
 
+    
+    
+    
+                            #-----------------------------Adding events------------------------------
     for event in pygame.event.get():        #events list in pygame
         if event.type == pygame.QUIT:       #clicking the red button of the window ends the loop
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and flying == False and gameOver == False:
             flying = True
+   
+
     pygame.display.update()
 
 pygame.quit()
